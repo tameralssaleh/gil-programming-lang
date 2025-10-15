@@ -15,6 +15,13 @@ class IdentifierNode(ASTNode):
 
     def __repr__(self):
         return f"IdentifierNode({self.name})"
+    
+class NullableIdentifierNode(ASTNode):
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"NullableIdentifierNode({self.name})"
 
 class StringNode(ASTNode):
     def __init__(self, value):
@@ -22,6 +29,13 @@ class StringNode(ASTNode):
 
     def __repr__(self):
         return f"StringNode({self.value})"
+    
+class BooleanNode(ASTNode):
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"BooleanNode({self.value})"
 
 class CharNode(ASTNode):
     def __init__(self, value):
@@ -36,6 +50,11 @@ class DefineNode(ASTNode):
         self.type_ = type_
         self.value = value
 
+class AssignNode(ASTNode):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
     def __repr__(self):
         return f"DefineNode(name={self.name}, type={self.type_}, value={self.value})"
 
@@ -47,3 +66,8 @@ class BinOpNode(ASTNode):
 
     def __repr__(self):
         return f"BinOpNode({self.left}, {self.op}, {self.right})"
+    
+class UnaryOpNode:
+    def __init__(self, op, operand):
+        self.op = op
+        self.operand = operand

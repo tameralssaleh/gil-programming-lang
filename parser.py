@@ -25,16 +25,23 @@ class Parser:
             return None
         if token.kind == "DEFINE":
             return self.parse_define()
+        if token.kind == "ASSIGN":
+            return self.parse_assign()
         else:
             return self.parse_boolean()
 
-    # --- DEFINE num INT 301 ---
     def parse_define(self):
         self.eat("DEFINE")
         name = self.eat("IDENTIFIER").value
         type_token = self.eat("TYPE").value
         value_node = self.parse_expr()
         return DefineNode(name, type_token, value_node)
+    
+    def parse_assign(self):
+        self.eat("ASSIGN")
+        name = self.eat("IDENTIFIER").value
+        value_node = self.parse_expr()
+        return AssignNode(name, value_node)
 
     # --- Expression grammar ---
     # expr   -> term ((ADD|SUB) term)*
@@ -85,6 +92,13 @@ class Parser:
             node = self.parse_boolean()
             self.eat("RPAREN")
             return node
+        elif token.kind == "BOOLEAN":
+            self.eat("BOOLEAN")
+            return BooleanNode(token.value)
+        elif token.kind == "NOT":
+            op = self.eat("NOT").kind
+            operand = self.parse_factor()
+            return UnaryOpNode(op, operand)
         else:
             raise SyntaxError(f"Unexpected token {token}")
         

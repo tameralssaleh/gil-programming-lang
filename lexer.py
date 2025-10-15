@@ -8,11 +8,13 @@ class Lexer:
         self.text = ""
         self.tokens = []
         self.token_specs = [
-            ("DEFINE", r"DEFINE"),
-            ("TYPE", r"INT|FLOAT|STRING|CHAR"),
+            ("DEFINE", r"define|DEFINE"),
+            ("ASSIGN", r"assign|ASSIGN"),
+            ("TYPE", r"int|INT|float|FLOAT|string|STRING|char|CHAR|bool|BOOL|void|VOID"),
             ("NUMBER", r"\d+(\.\d*)?"),
             ("STRING", r'"[^"]*"'),
             ("CHAR", r"'.'"),
+            # ("NULLABLEID", r"\??[A-Za-z_][A-Za-z0-9_]*"),            
             ("IDENTIFIER", r"[A-Za-z_][A-Za-z0-9_]*"),
             ("COMMENT", r";"),
             ("LPAREN", r"\("),
@@ -24,7 +26,6 @@ class Lexer:
             ("DIV", r"/"),
             ("FDIV", r"//"),
             ("MOD", r"%"),
-            ("POW", r"\^"),
             ("EQ", r"=="),
             ("NEQ", r"!="),
             ("LT", r"<"),
@@ -34,7 +35,6 @@ class Lexer:
             ("AND", r"&&"),
             ("OR", r"\|\|"),
             ("NOT", r"!"),
-            ("ASSIGN", r"="),
             ("WHITESPACE", r"\s+"),
             ("NEWLINE", r"\n")
         ]
@@ -59,6 +59,14 @@ class Lexer:
                 value = value[1:-1]  # Remove quotes
             elif kind == "CHAR":
                 value = value[1]  # Remove quotes
+            elif kind == "IDENTIFIER":
+                if value == "true":
+                    kind = "BOOLEAN"
+                    value = "true"
+                elif value == "false":
+                    kind = "BOOLEAN"
+                    value = "false"
+
             self.tokens.append(Token(kind, value))
 
         return self.tokens
