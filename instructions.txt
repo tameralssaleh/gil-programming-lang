@@ -1,0 +1,17 @@
+1) Open root folder in command prompt
+2) run `python main.py`
+
+Example Code Executed:
+
+    "define num1 int 7",
+    "define x int 10",
+    "define y int 20",
+    "define num1 int 55"
+    "assign num1 100 ; reassign num1 to 100",
+    "(x + y) * 2",
+    "define result int (x + y) * 2",
+    "5 && 4"
+    "1 || 0"
+    "0 || 0"
+    "true && false"
+    "define is_valid bool true"
