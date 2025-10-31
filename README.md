@@ -8,6 +8,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Getting Started](#getting-started) (N/A)
+- [Other Useful Information](#other-useful-information)
 - [Syntax Examples](#syntax-examples)
 
 ---
@@ -24,8 +25,15 @@ General Interpreted Language (GIL) focuses on:
 ## Features
 - Built-in REPL
 - Object-oriented design.
-- Simple and familiar syntax for rapid development.
+- Simple, familiar syntax for rapid development.
+- Simple, human-readable and understandable syntax for complete beginners.
 - Cross-platform support.
+---
+
+## Other Useful Information
+
+- GIL currently uses an interpreter built in Python 3.13 & above. There are plans to build the interpreter in C/C++, this Python implementation is not planned to stay for a long time and is solely used to build GIL as a prototype.
+
 ---
 
 ## Syntax Examples
@@ -103,4 +111,27 @@ if (4 == 4.0) {
 } else {
     out "Nevermind..."
 }
+```
+
+7) The following GIL code creates a new function with parameters `x` and `y` both being integers.
+
+```GIL
+function int add_numbers(int x, int y) {
+    return x + y
+}
+```
+
+8) The following GIL code creates a new function with parameters `x` and `y` both being integers just like in snippet 7, however, this time we allow parameters to default to a specified value in case they are not passed when the function is called..
+
+```GIL
+; <type> <parameter> default <value>
+function int add_numbers(int x default 0, int y default 0) {
+    return x + y
+}
+```
+
+9) The following GIL code executes `add_numbers(x, y)`. Note that `exec` means execute, and is meant to be used to call functions and methods.
+
+```GIL
+exec add_numbers(3, 4)
 ```

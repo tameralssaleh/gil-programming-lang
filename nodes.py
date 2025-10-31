@@ -1,3 +1,5 @@
+from environment import Env
+
 class ASTNode:
     pass
 
@@ -104,12 +106,40 @@ class IfBlockNode(ASTNode):
     def __init__(self, condition, true_block, false_block=None):
         self.condition = condition
         self.true_block = true_block
-        self.false_block = false_block # Also considered an "else" block
+        self.false_block = false_block # Also considered an "else" block.
 
 class WhileBlockNode(ASTNode):
     def __init__(self, condition, body):
         self.condition = condition
         self.body = body
+
+# Blocks for functions...
+
+class ParameterNode(ASTNode):
+    def __init__(self, name, type_):
+        self.name = name
+        self.type_ = type_
+        self.default_value = None  # Optional default value for the parameter
+
+class FunctionDefinitionNode(ASTNode):
+    def __init__(self, name, parameters, body, return_type):
+        self.name = name
+        self.parameters: list[ParameterNode] = parameters
+        self.local_environment: Env = None # Defined later in the interpreter. Stores the functions local variables including parameter values.
+        self.global_environment: Env = None # Defined later in the interpreter. Points to the global environment where the function was defined.
+        self.body = body
+        self.return_type = None if return_type == "void" or return_type == "VOID" else return_type
+
+class FunctionCallNode(ASTNode):
+    def __init__(self, name, arguments):
+        self.name = name
+        self.arguments = arguments
+
+# Keywords for return, break, continue, etc...
+
+class ReturnNode(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
 
 # Keywords for output and input...
 

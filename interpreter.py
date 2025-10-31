@@ -36,44 +36,34 @@ class Interpreter:
             elif target_type == "void":
                 return None
             else:
-                raise ValueError(f"Unknown cast type: {target_type}")
-            
+                raise ValueError(f"Unknown cast type: {target_type}")        
         elif isinstance(node, IdentifierNode):
             if node.name in self.global_env.variables:
                 return self.global_env.variables[node.name]
             else:
                 raise NameError(f"Undefined variable '{node.name}'")
-        # elif isinstance(node, NullableIdentifierNode):
-        #     if node.name in self.global_env.variables:
-        #         return self.global_env.variables[node.name]
-        #     else:
-        #         return None
         elif isinstance(node, BinOpNode):
             left = self.visit(node.left)
             right = self.visit(node.right)
             return self.eval_binop(left, node.op, right)
-        
         elif isinstance(node, UnaryOpNode):
             value = self.visit(node.operand)
             if node.op == "NOT":
                 return not value
             else:
                 raise ValueError(f"Unknown unary operator {node.op}") 
-            
         elif isinstance(node, IncNode):
             if node.identifier in self.global_env.variables:
                 self.global_env.variables[node.identifier] += 1
                 return self.global_env.variables[node.identifier]
             else:
                 raise NameError(f"Undefined variable '{node.identifier}'")
-
         elif isinstance(node, DecNode):
             if node.identifier in self.global_env.variables:
                 self.global_env.variables[node.identifier] -= 1
                 return self.global_env.variables[node.identifier]
             else:
                 raise NameError(f"Undefined variable '{node.identifier}'")
-
         elif isinstance(node, IfBlockNode):
             condition = self.visit(node.condition)
             if condition:
@@ -81,17 +71,13 @@ class Interpreter:
             elif node.false_block:
                 return self.visit(node.false_block)
             return None
-
         elif isinstance(node, WhileBlockNode):
             while self.visit(node.condition):
                 self.visit(node.body)  # just execute the body, ignore the return
-            
         elif isinstance(node, OutputNode):
             value = self.visit(node.expression)
             print(value)
             return value  # or None
-
-
         elif isinstance(node, DefineNode):
             value = self.visit(node.value)
             self.global_env.variables[node.name] = value
@@ -103,13 +89,24 @@ class Interpreter:
                 return value
             else:
                 raise NameError(f"Undefined variable '{node.name}' must be defined before assignment.")
-
         elif isinstance(node, BlockNode):
             last_result = None
             for stmt in node.statements:
                 last_result = self.visit(stmt)  # OutputNode prints internally
             return last_result
-
+        elif isinstance(node, FunctionDefinitionNode):
+            # Store the function definition in the global environment
+            self.global_env.functions[node.name] = node
+            function_env = Env()
+            node.local_environment = function_env
+            node.global_environment = self.global_env
+            if node.parameters:
+                for param in node.parameters:
+                    if param.default_value is not None:
+                        function_env.variables[param.name] = self.visit(param.default_value)
+                    else:
+                        function_env.variables[param.name] = None  # Initialize parameters to None
+            return None
 
     def eval_binop(self, left, op, right):
         if op == "ADD":

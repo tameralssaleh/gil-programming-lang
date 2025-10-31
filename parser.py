@@ -162,6 +162,58 @@ class Parser:
             return self.tokens[pos]
         return None
     
+    def parse_function_definition(self):
+        self.eat("FUNCTION")
+
+        if not self.check("TYPE"):
+            raise Exception("FunctionDefinitionError: Missing return type for function definition.")
+        
+        return_type = self.eat("TYPE").value
+        name = self.eat("IDENTIFIER").value
+        parameters: list[tuple[str, str]] = []
+        self.eat("LPAREN")
+        if not self.check("RPAREN"):
+            while True:
+                param_type = self.eat("TYPE").value
+                param_name = self.eat("IDENTIFIER").value
+                if self.check("DEFAULT"):
+                    self.eat("DEFAULT")
+                    default_value_node = self.parse_expr()
+                    param_node = ParameterNode(param_name, param_type)
+                    param_node.default_value = default_value_node
+                else:
+                    param_node = ParameterNode(param_name, param_type)
+                parameters.append(param_node)
+                if self.check("COMMA"):
+                    self.eat("COMMA")
+                else:
+                    break
+
+        self.eat("RPAREN")
+        body = self.parse_block()
+        return FunctionDefinitionNode(name, parameters, body, return_type)
+    
+    def parse_function_call(self):
+        self.eat("EXECUTE")
+
+        if not self.check("IDENTIFIER"):
+            raise SyntaxError("No function or method specified to execute.")
+        
+        function_name = self.eat("IDENTIFIER").value
+        args = []
+        self.eat("LPAREN")
+        if not self.check("RPAREN"):
+            while True:
+                arg_node = self.parse_expr()
+                args.append(arg_node)
+                if self.check("COMMA"):
+                    self.eat("COMMA")
+                else:
+                    break
+            
+        self.eat("RPAREN")
+        return FunctionCallNode(function_name, args)
+
     def parse_if(self):
         self.eat("IF")
         condition = self.parse_boolean()
@@ -207,16 +259,21 @@ class Parser:
                 return self.parse_assign()
             elif next_tok and next_tok.kind in ("ADD", "SUB", "MUL", "DIV", "FDIV", "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "AND", "OR"):
                 return self.parse_boolean()
-            
+        elif tok.kind == "FUNCTION":
+            return self.parse_function_definition()
+        elif tok.kind == "RETURN":
+            self.eat("RETURN")
+            expr_node = self.parse_expr()
+            return ReturnNode(expr_node)
         elif tok.kind == "LCBRACE":
             return self.parse_block()
-        elif tok.kind == "OUTPUT":
-            self.eat("OUTPUT")
-            return self.parse_output_expr()
         elif tok.kind == "IF":
             return self.parse_if()
         elif tok.kind == "WHILE":
             return self.parse_while()
+        elif tok.kind == "OUTPUT":
+            self.eat("OUTPUT")
+            return self.parse_output_expr()
         else:
             raise SyntaxError(f"Unexpected token {tok}")
 
