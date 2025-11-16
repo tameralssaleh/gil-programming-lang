@@ -20,8 +20,9 @@ class NumberNode(ASTNode):
         return f"NumberNode({self.type_}:{self.value})"
 
 class IdentifierNode(ASTNode):
-    def __init__(self, name):
+    def __init__(self, name, declared_type=None):
         self.name = name
+        self.declared_type = declared_type
 
     def __repr__(self):
         return f"IdentifierNode({self.name})"
@@ -127,7 +128,7 @@ class FunctionDefinitionNode(ASTNode):
         self.parameters: list[ParameterNode] = parameters
         self.local_environment: Env = None # Defined later in the interpreter. Stores the functions local variables including parameter values.
         self.global_environment: Env = None # Defined later in the interpreter. Points to the global environment where the function was defined.
-        self.body = body
+        self.body: BlockNode = body
         self.return_type = None if return_type == "void" or return_type == "VOID" else return_type
 
 class FunctionCallNode(ASTNode):

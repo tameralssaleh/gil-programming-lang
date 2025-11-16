@@ -94,7 +94,7 @@ class Parser:
                 self.eat("DEC")
                 return IdentifierNode(variable_name)
             
-            return IdentifierNode(variable_name)
+            return IdentifierNode(variable_name, declared_type=None)
         
         elif token.kind == "STRING":
             self.eat("STRING")
@@ -130,7 +130,7 @@ class Parser:
         
         elif token.kind == "OUTPUT":
             self.eat("OUTPUT")
-            return OutputNode(token.value)
+            return self.parse_output_expr()
         
         elif token.kind == "CAST":
             return self.parse_casting()
@@ -142,8 +142,12 @@ class Parser:
             raise SyntaxError(f"Unexpected token {token}")
         
     def parse_output_expr(self):
-        expr_node = self.parse_expr()
-        return OutputNode(expr_node)
+        if self.check("EXECUTE"):
+            func_call = self.parse_function_call()
+            return OutputNode(func_call)
+        else:
+            expr_node = self.parse_expr()
+            return OutputNode(expr_node)
         
     def expect(self, kind):
         if self.current_token.kind != kind:
@@ -243,6 +247,8 @@ class Parser:
             return self.parse_expr()
         elif tok.kind == "DEFINE":
             return self.parse_define()
+        elif tok.kind == "ASSIGN":
+            return self.parse_assign()
         elif tok.kind == "IDENTIFIER":
             next_tok = self.peek()
             if next_tok and next_tok.kind == "INC":
@@ -255,8 +261,6 @@ class Parser:
                 self.eat("IDENTIFIER")
                 self.eat("DEC")
                 return DecNode(var_name)
-            elif next_tok and next_tok.kind == "ASSIGN":
-                return self.parse_assign()
             elif next_tok and next_tok.kind in ("ADD", "SUB", "MUL", "DIV", "FDIV", "EQ", "NEQ", "LT", "LTE", "GT", "GTE", "AND", "OR"):
                 return self.parse_boolean()
         elif tok.kind == "FUNCTION":

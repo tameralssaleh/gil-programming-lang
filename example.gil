@@ -1,9 +1,6 @@
-define pi float 3.14159265 ; pi
+; <type> <parameter> default <value>
+function int add_numbers(int x default 0, int y default 0) {
+    return x + y
+}
 
-define r float pi/2 ; pi/2 radians
-
-define d int (int)(r*(180/pi)) ; convert radians to degrees
-
-out (string)r + " radians is the same as " + (string)d + " degrees."
-
-
+out exec add_numbers(3, 4)
