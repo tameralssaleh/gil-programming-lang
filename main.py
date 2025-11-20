@@ -22,3 +22,4 @@ try:
     result = format_value(interpreter.visit(ast))
 except Exception as e:
     print(f"Error: {e}")
+

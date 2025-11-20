@@ -340,6 +340,10 @@ class Parser:
         elif tok.kind == "OUTPUT":
             self.eat("OUTPUT")
             return self.parse_output_expr()
+        elif tok.kind == "FOR":
+            return self.parse_for()
+        elif tok.kind == "FOREACH":
+            return self.parse_foreach()
         else:
             raise SyntaxError(f"Unexpected token {tok}")
 

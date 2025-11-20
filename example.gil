@@ -1,5 +1,7 @@
 
-define x[3] int [1, 2, 3]
 define y[] int [4, 5, 6, 7, 8, 9]
-out x + y
+
+foreach (define x int : y) {
+    out x
+}
 

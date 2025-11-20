@@ -48,7 +48,7 @@ class Interpreter:
             if node.name in self.global_env.variables:
                 return self.global_env.variables[node.name]["value"]
             else:
-                raise NameError(f"Undefined variable '{node.name}'")
+                raise NameError(f"Undefined variable '{node.name}\nDict{self.global_env.variables}'")
             
         elif isinstance(node, BinOpNode):
             left = self.visit(node.left)
@@ -93,10 +93,18 @@ class Interpreter:
                 self.visit(node.body)  # just execute the body, ignore the return
 
         elif isinstance(node, ForEachLoopNode):
-            iterable = self.visit(node.iterable)
-            for item in iterable:
-                self.global_env.variables[node.iterator]["value"] = item
-                self.visit(node.body)
+            try:
+                loop_env = Env(parent=self.global_env)
+                prev_env = self.global_env
+                self.global_env = loop_env
+                iterable = self.visit(node.iterable)
+                for item in iterable:
+                    self.global_env.variables[node.iterator]["value"] = item
+                    self.visit(node.body)
+            except Exception as e:
+                raise RuntimeError(f"Error during foreach loop: {e}")
+            finally:
+                self.global_env = prev_env
 
         elif isinstance(node, OutputNode):
             value = self.visit(node.expression)

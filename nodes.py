@@ -126,6 +126,8 @@ class ForEachLoopNode(ASTNode):
         self.iterator = iterator
         self.iterable = iterable
         self.body = body
+        self.local_environment: Env = None # Defined later in the interpreter. Stores the loops local variables including the iterator.
+        self.global_environment: Env = None # Defined later in the interpreter. Points to the global environment where the loop was defined.
 
 # Blocks for functions...
 
