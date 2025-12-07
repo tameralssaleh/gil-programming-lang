@@ -1,13 +1,13 @@
 # General Interpreted Language (GIL)
 
-**HawkScript** is a lightweight, fast, general-purpose object-oriented programming language.
+**GIL** is a lightweight, fast, general-purpose object-oriented programming language.
 
 ---
 
 ## Table of Contents
 - [Overview](#overview)
 - [Features](#features)
-- [Getting Started](#getting-started) (N/A)
+- [Getting Started](#getting-started)
 - [Other Useful Information](#other-useful-information)
 - [Syntax Examples](#syntax-examples)
 
@@ -24,11 +24,17 @@ General Interpreted Language (GIL) focuses on:
 
 ## Features
 - Built-in REPL
-- Object-oriented design.
 - Simple, familiar syntax for rapid development.
 - Simple, human-readable and understandable syntax for complete beginners.
 - Cross-platform support.
 ---
+
+## Getting Started
+How to get started with GIL in these few useful steps.
+1) Step One: Download or clone this entire repository.
+2) Step Two: Check out the [Syntax Examples](#syntax-examples) section, as it contains all possible executable code currently available in GIL.
+3) Step Three: edit the `example.gil` file, paste or write your GIL code.
+4) Step Four: Run the `main.py` file. Before running the interpreter, please ensure you have Python 3.13 or later installed.
 
 ## Other Useful Information
 
