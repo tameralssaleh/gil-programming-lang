@@ -21,5 +21,7 @@ try:
     ast = parser.parse() # parse the entire program
     result = format_value(interpreter.visit(ast))
 except Exception as e:
+    print(interpreter.global_env.functions)
     print(f"Error: {e}")
+
 

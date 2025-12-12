@@ -82,3 +82,24 @@ class Conversion:
             str: The converted string value.
         """
         return str(value)
+
+"""
+REGISTER ALL STDLIB FUNCTIONS
+"""
+
+def get_stdlib_functions() -> list:
+    """Returns all functions part of this standard library.
+
+    Returns:
+        list: All functions
+    """
+    return [
+        printf,
+        printfr,
+        str_len,
+        sizeof,
+        pow,
+        Conversion.to_int,
+        Conversion.to_float,
+        Conversion.to_string,
+    ]

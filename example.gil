@@ -1,10 +1,5 @@
-define x[3] int [1, 2, 3]
+import stdlib
 
-try {
-    out x[5] ; This line will not work as the index is out of range, thus will execute the catch block. 
-} catch {
-    out "Error"
-} finally {
-    out "Code finished." ; this will execute no matter if there is an error or if the try block executed without an error.
+namespace program {
+    out exec pow(2,2)
 }
-

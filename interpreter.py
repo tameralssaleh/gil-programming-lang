@@ -1,6 +1,7 @@
 from nodes import *
 from environment import Env
 from exceptions import ReturnException
+import inspect
 
 class Interpreter:
     def __init__(self, global_env: Env):
@@ -163,6 +164,25 @@ class Interpreter:
                 last_result = self.visit(stmt)  # OutputNode prints internally
             return last_result 
         
+        elif isinstance(node, NamespaceDefinitionNode):
+            namespace_env = Env(parent=self.global_env)
+            for stmt in node.body.statements:
+                self.visit(stmt)
+            self.global_env.variables[node.name] = {"type": "namespace", "value": namespace_env}
+            return None
+        
+        elif isinstance(node, ImportNode):
+            module_name = node.module_name
+            try:
+                if module_name == "stdlib":
+                    import stdlib.stdlib as stdlib
+                    self.register_functions(module_name, stdlib.get_stdlib_functions())
+                else:
+                    with open(module_name + ".gil", "r") as file:
+                        ...
+            except ImportError as e:
+                raise ImportError(f"Failed to import module '{module_name}. Are you sure the file exists and is accessible?': {e}")
+            
         elif isinstance(node, FunctionDefinitionNode):
             # Store the function definition in the global environment
             self.global_env.functions[node.name] = node
@@ -175,6 +195,10 @@ class Interpreter:
             
             func_def: FunctionDefinitionNode = self.global_env.functions[node.name]
             call_env = Env(parent=self.global_env)
+
+            if func_def.body is None:  # native library function
+                args = [self.visit(arg) for arg in node.arguments]
+                return func_def.py_impl(*args)
 
             if len(node.arguments) > len(func_def.parameters):
                 raise TypeError(f"Function '{node.name}' expected at most {len(func_def.parameters)} arguments, got {len(node.arguments)} instead.")
@@ -276,3 +300,20 @@ class Interpreter:
         if isinstance(value, str) and expected_type == "char":
             return len(value) == 1
         return isinstance(value, type_map[expected_type])
+    
+    def register_functions(self, module: str, functions: list):
+        for func in functions:
+            args = inspect.getfullargspec(func).args
+            spec = inspect.signature(func)
+
+            func_node = FunctionDefinitionNode(
+                func.__name__,
+                [arg for arg in args],
+                None,
+                spec.return_annotation
+            )
+
+            # store the real python function inside the node
+            func_node.py_impl = func
+
+            self.global_env.functions[func.__name__] = func_node

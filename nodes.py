@@ -154,10 +154,13 @@ class FunctionDefinitionNode(ASTNode):
         self.body: BlockNode = body
         self.return_type = None if return_type == "void" or return_type == "VOID" else return_type
 
+        self.py_impl = None  # For built-in functions implemented in Python
+
 class FunctionCallNode(ASTNode):
     def __init__(self, name, arguments):
         self.name = name
         self.arguments = arguments
+
 
 # Keywords for return, break, continue, etc...
 
@@ -188,3 +191,30 @@ class ArrayAccessNode(ASTNode):
 
     def __repr__(self):
         return f"ArrayAccessNode(array={self.array_name}, index={self.index})"
+    
+# Nodes for special operators regarding namespaces, imports, and other language features.
+
+class NameScopeResolutionOpNode(ASTNode):
+    def __init__(self, scope_name: IdentifierNode, identifier: IdentifierNode):
+        self.scope_name = scope_name # Represents the namespace or scope name.
+        self.identifier = identifier # Represents the target object within the scope.
+    
+    def __repr__(self):
+        return f"NameScopeResolutionOpNode(scope={self.scope_name}, id={self.identifier})"
+    
+class ImportNode(ASTNode):
+    def __init__(self, module_name: IdentifierNode, alias: IdentifierNode = None):
+        self.module_name = module_name
+        self.alias = alias
+
+    def __repr__(self):
+        return f"ImportNode(module={self.module_name}, alias={self.alias})"
+    
+class NamespaceDefinitionNode(ASTNode):
+    def __init__(self, name: IdentifierNode, body: BlockNode):
+        self.name = name
+        self.body = body
+
+    def __repr__(self):
+        return f"NamespaceDefinitionNode(name={self.name}, body={self.body})"
+    

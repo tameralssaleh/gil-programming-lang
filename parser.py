@@ -222,6 +222,17 @@ class Parser:
         body = self.parse_block()
         return FunctionDefinitionNode(name, parameters, body, return_type)
     
+    def parse_namespace_definition(self):
+        self.eat("NAMESPACE")
+        name = self.eat("IDENTIFIER").value
+        body = self.parse_block()
+        return NamespaceDefinitionNode(name, body)
+    
+    def parse_import(self):
+        self.eat("IMPORT")
+        module_name = self.eat("IDENTIFIER").value
+        return ImportNode(module_name)
+    
     def parse_function_call(self):
         self.eat("EXECUTE")
 
@@ -368,6 +379,12 @@ class Parser:
         elif tok.kind == "FUNCTION":
             print(f"Parsing FUNCTION statement, current token: {self.current_token}") if self.debug else None
             return self.parse_function_definition()
+        elif tok.kind == "NAMESPACE":
+            print(f"Parsing NAMESPACE statement, current token: {self.current_token}") if self.debug else None
+            return self.parse_namespace_definition()
+        elif tok.kind == "IMPORT":
+            print(f"Parsing IMPORT statement, current token: {self.current_token}") if self.debug else None
+            return self.parse_import()
         elif tok.kind == "RETURN":
             print(f"Parsing RETURN statement, current token: {self.current_token}") if self.debug else None
             self.eat("RETURN")
